@@ -19,7 +19,7 @@ putCatNameLn = putCatName' off2
 
 putCatName' :: IO () -> (String, String) -> IO ()
 putCatName' f (c, n) =
-  yellow >> putStr c >> off >> putChar '/' >> yellow >> putStr n >> f
+  inYellow (putStr c) >> putChar '/' >> yellow >> putStr n >> f
 
 ----------------------------------------------------------------
 

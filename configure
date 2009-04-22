@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Fake configure script.
+
+portageq=/usr/bin/portageq
+
+PORTAGE_TREE=`${portageq} portdir 2>/dev/null`
+PORTAGE_DB=`${portageq} vdb_path 2>/dev/null`
+
+if [ -z $PORTAGE_TREE ]; then
+  PORTAGE_TREE="/usr/portage"
+fi
+
+if [ -z $PORTAGE_DB ]; then
+  PORTAGE_DB="/var/db/pkg"
+fi
+
+echo "portdir: ${PORTAGE_TREE}"
+echo "vdb_path: ${PORTAGE_DB}"
+
+sed -e s,'@@PortageTree@@',"\"${PORTAGE_TREE}\"",	\
+    -e s,'@@PortageDB@@',"\"${PORTAGE_DB}\"",		\
+    "Adelie/Config.hs.in" > "Adelie/Config.hs"

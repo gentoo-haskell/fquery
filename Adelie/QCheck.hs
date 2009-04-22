@@ -23,7 +23,6 @@ type Count = (Int, Int)
 ----------------------------------------------------------------
 
 qCheck :: [String] -> IO ()
-qCheck [] = return ()
 qCheck args = mapM_ check =<< findInstalledPackages args
 
 check :: (String, String) -> IO ()
@@ -42,7 +41,7 @@ check' (Obj o m _) (g, b) = do
   r <- try (getFileStatus o)
   case r of
     Left e -> do
-      red >> putStr "!!! " >> off >> putStr o >> putStrLn " does not exist"
+      inRed (putStr "!!! ") >> putStr o >> putStrLn " does not exist"
       return (False, (g, b+1))
     Right stat -> do
       (rd, wr) <- createPipeHandle
@@ -74,4 +73,4 @@ runMD5sum f stdout = runProcess md5sum [f] Nothing Nothing stdin stdout stderr
 
 putMD5error :: String -> IO ()
 putMD5error file =
-  red >> putStr "!!! " >> off >> putStrLn (file ++ " has incorrect md5sum")
+  inRed (putStr "!!! ") >> putStrLn (file ++ " has incorrect md5sum")

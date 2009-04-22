@@ -8,11 +8,12 @@ module Adelie.QOwn (
 ) where
 
 import List       (delete)
-import Monad      (foldM, when)
+import Monad      (when)
 import Text.Regex (Regex, matchRegex, mkRegex)
 
 import Adelie.Colour
 import Adelie.Contents
+import Adelie.ListEx
 import Adelie.Portage
 import Adelie.Pretty
 
@@ -21,11 +22,10 @@ import Adelie.Pretty
 qOwn :: [String] -> IO ()
 qOwn [] = return ()
 qOwn args = do
-  foldM qOwn' args =<< allInstalledPackages
+  foldMUntil qOwn' null args =<< allInstalledPackages
   putChar '\n'
 
 qOwn' :: [String] -> (String, String) -> IO [String]
-qOwn' [] _ = return []
 qOwn' files catname = readContents (puts catname) contents files
   where contents = contentsFromCatName catname
 
@@ -37,7 +37,7 @@ puts catname c fs =
     then do
       let fs' = deleteContent c fs
       putCatName catname >> putStr " (" >> putContents c >> putStrLn ")"
-      return (fs' == [], fs')
+      return (null fs', fs')
     else
       return (False, fs)
 

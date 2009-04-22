@@ -21,7 +21,6 @@ type Count = (FileOffset, Int, Int, Int, Int)
 ----------------------------------------------------------------
 
 qSize :: [String] -> IO ()
-qSize [] = return ()
 qSize args = mapM_ size =<< findInstalledPackages args
 
 size :: (String, String) -> IO ()

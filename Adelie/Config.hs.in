@@ -1,0 +1,13 @@
+-- Config.hs
+--
+-- Auto-generated.
+
+module Adelie.Config (
+  portageTree,
+  portageDB
+) where
+
+portageTree, portageDB :: String
+
+portageTree = @@PortageTree@@
+portageDB = @@PortageDB@@

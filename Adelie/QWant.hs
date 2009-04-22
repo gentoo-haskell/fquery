@@ -12,7 +12,6 @@ import Adelie.Use
 -------------------------------------------------------------
 
 qWant :: [String] -> IO ()
-qWant []   = return ()
 qWant args = mapM_ qWant' =<< findInstalledPackages args
 
 qWant' :: (String, String) -> IO ()

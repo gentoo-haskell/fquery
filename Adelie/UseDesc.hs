@@ -8,9 +8,11 @@ module Adelie.UseDesc (
   readUseDescPackage
 ) where
 
+import Char (isSpace)
 import Data.HashTable as HashTable
-import Text.ParserCombinators.Parsec
+import Monad (when)
 
+import Adelie.ListEx
 import Adelie.Portage
 
 type UseDesc = (String, String)
@@ -18,45 +20,51 @@ type UseDescriptions = HashTable String String
 
 ----------------------------------------------------------------
 
-genReadDesc :: Parser [UseDesc] -> String -> IO [UseDesc]
-genReadDesc p fn = do
-  r <- parseFromFile p fn
-  case r of
-    Left err -> putStr "Parse error at " >> print err >> error "Aborting"
-    Right x  -> return x
-
-----------------------------------------------------------------
-
 readUseDesc :: IO UseDescriptions
-readUseDesc = genReadDesc useParser useDesc >>= HashTable.fromList hashString
+readUseDesc = do
+  table <- HashTable.new (==) hashString
+  ls <- readFile useDesc
+  mapM_ (useParser table) (lines ls)
+  return table
 
-useParser :: Parser [UseDesc]
-useParser = useParser' `sepEndBy` newline
+useParser :: UseDescriptions -> String -> IO ()
+useParser _ ('#':_) = return ()
+useParser table line = insert table use desc
+  where (use, desc) = myBreak line
 
-useParser' :: Parser UseDesc
-useParser' = parseComment useParser'
-         <|> parseUse
+myBreak :: String -> (String, String)
+myBreak [] = ("", "")
+myBreak (' ':'-':' ':xs) = ("", xs)
+myBreak (x:xs) = (x:ys, zs)
+  where (ys, zs) = myBreak xs
 
 ----------------------------------------------------------------
 
 readUseDescPackage :: String -> String -> IO UseDescriptions
-readUseDescPackage start end = 
-  genReadDesc (useParser2 start end) useDescPackage >>=
-  HashTable.fromList hashString
+readUseDescPackage start end = do
+  table <- HashTable.new (==) hashString
+  ls <- readFile useDescPackage
+  mapMUntil_ (useParser2 table start end) (lines ls)
+  return table
 
-useParser2 :: String -> String -> Parser [UseDesc]
-useParser2 start end = (useParser2' start end) `sepEndBy` newline
+mapMUntil_ :: Monad m => (a -> m Bool) -> [a] -> m ()
+mapMUntil_ _ [] = return ()
+mapMUntil_ f (x:xs) = do
+  r <- f x
+  when r (mapMUntil_ f xs)
 
-useParser2' :: String -> String -> Parser UseDesc
-useParser2' start end =
-      parseComment (useParser2' start end)
-  <|> do { readname <- many1 (satisfy notColon)
-         ; case mid start readname end of
-             LT -> skipMany (satisfy notNewline) >> useParser2' start end
-             GT -> return ("","")
-             otherise -> char ':' >> parseUse
-         }
-
+useParser2 :: UseDescriptions -> String -> String -> String -> IO Bool
+useParser2 _ _ _ [] = return True
+useParser2 _ _ _ ('#':_) = return True
+useParser2 table start end str@(c:_) = do
+  case mid start catname end of
+      LT -> return True
+      EQ -> insert table use desc >> return True
+      GT -> return False
+  where str' = reverse $ dropWhile isSpace $ reverse str
+        (catname, rest) = break2 (':' ==) str'
+        (use, desc) = myBreak rest
+  
 ----------------------------------------------------------------
 
 -- In Haskell, vim-core > vim
@@ -77,34 +85,3 @@ mid l m r
   | myCompare l m == GT = LT
   | myCompare m r == GT = GT
   | otherwise = EQ
-
-----------------------------------------------------------------
-
-parseUse :: Parser UseDesc
-parseUse = do { use <- useFlag
-              ; spaces
-              ; string "- "
-              ; desc <- description
-              ; return (use, desc)
-              }
-
-parseComment :: Parser UseDesc -> Parser UseDesc
-parseComment cont = do { char '#'
-                       ; skipMany (satisfy notNewline)
-                       ; cont
-                       }
-                <|> do { space
-                       ; cont
-                       }
-
-useFlag :: Parser String
-useFlag = many1 (satisfy (/= ' '))
-
-description :: Parser String
-description = many1 (satisfy notNewline)
-
-notColon, notNewline :: Char -> Bool
-notColon ':'    = False
-notColon _      = True
-notNewline '\n' = False
-notNewline _    = True

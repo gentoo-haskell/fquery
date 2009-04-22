@@ -39,10 +39,11 @@ dependFromCatName (cat, name) = concatPath [portageDB,cat,name,"RDEPEND"]
 
 readDepend :: FilePath -> [String] -> IO [Dependency]
 readDepend fn iUse = do
-  r <- parseFromFile (dependParser iUse) fn
+  r <- (start_parser fn) `catch` (\ _ -> return $ Right [])
   case r of
     Left err -> putStr "Parse error at " >> print err >> error "Aborting"
     Right x  -> return $ nub x
+  where start_parser = parseFromFile (dependParser iUse)
 
 ----------------------------------------------------------------
 

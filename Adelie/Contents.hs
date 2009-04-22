@@ -33,13 +33,17 @@ contentsFromCatName (cat, name) = concatPath [portageDB,cat,name,"CONTENTS"]
 
 readContents :: (Contents -> a -> IO (Bool, a)) -> FilePath -> a -> IO a
 readContents f fn a = do
-  fp <- openFile fn ReadMode
-  a' <- readContents' f fp a
-  hClose fp
-  return a'
+  r <- try read
+  case r of
+    Left  _  -> return a
+    Right a' -> return a'
+  where
+    read = (bracket (openFile fn ReadMode)
+                    hClose
+                    (readContents' f a))
 
-readContents' :: (Contents -> a -> IO (Bool, a)) -> Handle -> a -> IO a
-readContents' f fp a = do
+readContents' :: (Contents -> a -> IO (Bool, a)) -> a -> Handle -> IO a
+readContents' f a fp = do
   eof <- hIsEOF fp
   if eof
     then return a
@@ -48,7 +52,7 @@ readContents' f fp a = do
       (done, a') <- f (contentsParser ln) a
       if done
         then return a'
-        else readContents' f fp a'
+        else readContents' f a' fp
 
 ----------------------------------------------------------------
 

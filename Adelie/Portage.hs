@@ -21,13 +21,8 @@ import List       (intersperse, sort)
 import Monad      (liftM)
 
 import Adelie.ListEx
+import Adelie.Config
 
-portageTree :: String
-portageTree = "/usr/portage"
-
--- Where portage's database is located.
-portageDB :: String
-portageDB = "/var/db/pkg"
 
 portageProfiles :: String
 portageProfiles = portageTree ++ "/profiles"

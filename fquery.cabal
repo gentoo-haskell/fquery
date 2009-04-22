@@ -1,0 +1,38 @@
+Name:		fquery
+Version:	0.2
+Author:		David Wang <millimillenary@gmail.com>
+Maintainer:	David Wang <millimillenary@gmail.com>
+Copyright:	2006 David Wang
+License-File:	LICENCE.txt
+License:	OtherLicense
+Synopsis:	Installed package query tool for Gentoo Linux
+Build-depends:	base, haskell98, parsec, unix
+Extra-Source-Files:
+                configure
+		Adelie/Config.hs.in
+		Adelie/opts.h
+
+Executable:	fquery
+Main-is:	Main.hs
+Other-Modules:	Adelie.Colour
+		Adelie.CompareVersion
+		Adelie.Contents
+		Adelie.Depend
+		Adelie.ListEx
+                Adelie.Options
+		Adelie.Portage
+		Adelie.Pretty
+		Adelie.Provide
+		Adelie.QChangelog
+		Adelie.QCheck
+		Adelie.QDepend
+		Adelie.QHasUse
+		Adelie.QList
+		Adelie.QOwn
+		Adelie.QSize
+		Adelie.QUse
+		Adelie.QWant
+		Adelie.Use
+		Adelie.UseDesc
+GHC-Options:	-O
+c-sources:	Adelie/opts.c

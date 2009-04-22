@@ -22,7 +22,6 @@ data ListTypes
 ---------------------------------------------------------------- 
 
 qList :: ListTypes -> [String] -> IO ()
-qList _ [] = return ()
 qList types args = mapM_ (list puts) =<< findInstalledPackages args
   where
     puts = case types of

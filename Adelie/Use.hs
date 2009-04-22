@@ -26,9 +26,9 @@ iUseFromCatName (cat, name) = concatPath [portageDB,cat,name,"IUSE"]
 ----------------------------------------------------------------
 
 readUse :: FilePath -> IO [String]
-readUse fn = liftM words (readFile fn)
+readUse fn = (liftM words $ readFile fn) `catch` (\ _ -> return [])
 
 -- IUSE files sometimes have duplicate USE flags.  I am not sure if it is the
 -- intended behaviour, but I filter them out.
 readIUse :: FilePath -> IO [String]
-readIUse fn = liftM (nub.sort.words) (readFile fn)
+readIUse fn = (liftM (nub.sort.words) $ readFile fn) `catch` (\ _ -> return [])

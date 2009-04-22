@@ -17,7 +17,6 @@ import Adelie.UseDesc
 ----------------------------------------------------------------
 
 qUse :: [String] -> IO ()
-qUse [] = return ()
 qUse args = qUse' =<< findInstalledPackages args
 
 qUse' :: [(String, String)] -> IO ()
