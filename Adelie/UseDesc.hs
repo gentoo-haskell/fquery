@@ -15,7 +15,6 @@ import Monad (when)
 import Adelie.ListEx
 import Adelie.Portage
 
-type UseDesc = (String, String)
 type UseDescriptions = HashTable String String
 
 ----------------------------------------------------------------
@@ -56,7 +55,7 @@ mapMUntil_ f (x:xs) = do
 useParser2 :: UseDescriptions -> String -> String -> String -> IO Bool
 useParser2 _ _ _ [] = return True
 useParser2 _ _ _ ('#':_) = return True
-useParser2 table start end str@(c:_) = do
+useParser2 table start end str = do
   case mid start catname end of
       LT -> return True
       EQ -> insert table use desc >> return True

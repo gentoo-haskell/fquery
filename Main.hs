@@ -24,6 +24,7 @@ data Command
   = Short String String CommandProc
   | Long  String String String CommandProc
 
+logCommands :: [Command]
 logCommands = [
   (Long   "c" "changes"
           "list changes since the installed version"
@@ -33,6 +34,7 @@ logCommands = [
           qLogFile)
   ]
 
+listCommands :: [Command]
 listCommands = [
   (Long   "f" "files"
           "list the contents of a package"
@@ -48,6 +50,7 @@ listCommands = [
           (qList ListLinks))
   ]
 
+ownCommands :: [Command]
 ownCommands = [
   (Long   "b" "belongs"
           "find the package(s) owning a file"
@@ -63,6 +66,7 @@ ownCommands = [
           qCheck)
   ]
 
+dependCommands :: [Command]
 dependCommands = [
   (Long   "d" "depends"
           "list packages directly depending on this package"
@@ -72,6 +76,7 @@ dependCommands = [
           qWant)
   ]
 
+useCommands :: [Command]
 useCommands = [
   (Long   "u" "uses"
           "describe a package's USE flags"
@@ -81,6 +86,7 @@ useCommands = [
           qHasUse)
   ]
 
+allCommands :: [Command]
 allCommands = logCommands ++ listCommands ++ ownCommands ++ dependCommands ++ useCommands
 
 ----------------------------------------------------------------
@@ -152,5 +158,7 @@ putCommand (Long cmd0 cmd1 desc _) = f `withDesc` desc
 withDesc :: IO () -> String -> IO ()
 f `withDesc` desc = putStr "    " >> f >> tab >> putStrLn desc
 
+tab :: IO ()
 tab = putChar '\t'
+nl :: IO ()
 nl  = putChar '\n'

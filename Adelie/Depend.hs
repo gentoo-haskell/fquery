@@ -12,8 +12,8 @@ module Adelie.Depend (
   putDependency
 ) where
 
-import Char (isSpace)
-import List (nub)
+import Data.Char (isSpace)
+import Data.List (nub)
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language
 import Text.ParserCombinators.Parsec.Token
@@ -58,8 +58,9 @@ putDependency (Any p)            = putStr p
 
 dependParser :: [String] -> Parser [Dependency]
 dependParser iUse = do
-  skip <- spaces
+  _skip <- spaces
   packages <- many (dependParser' iUse)
+  eof
   return $ concat packages
 
 dependParser' :: [String] -> Parser [Dependency]
@@ -73,6 +74,8 @@ parseOr iUse = do { string "||"
                   ; spaces
                   ; parseBrackets iUse
                   }
+             <|>
+                parseBrackets iUse
 
 parsePackageOrUse :: [String] -> Parser [Dependency]
 parsePackageOrUse iUse =
@@ -90,10 +93,21 @@ parsePackageOrUse iUse =
      }
 
 parsePackageOrUseWord :: Parser String
-parsePackageOrUseWord = many1 (satisfy cond)
+parsePackageOrUseWord = do { result <- many1 (satisfy cond)
+                           -- skip[use]
+                           -- TODO: add it to output
+                           ; optionMaybe (do { char '['
+                                             ; _use <- many1 (satisfy (/= ']'))
+                                             ; char ']'
+                                             -- ; return use
+                                             ; return ()
+                                             })
+                           ; return result
+                           }
   where
     cond '?' = False
     cond ')' = False
+    cond '[' = False
     cond x = not $ isSpace x
 
 parseBrackets :: [String] -> Parser [Dependency]

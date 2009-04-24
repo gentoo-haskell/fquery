@@ -22,18 +22,18 @@ qUse args = qUse' =<< findInstalledPackages args
 qUse' :: [(String, String)] -> IO ()
 qUse' [] = return ()
 qUse' catnames = do
-  useDesc <- readUseDesc
-  useDescPackage <- readUseDescPackage min max
-  mapM_ (use useDesc useDescPackage) catnames
-  where min = dropVersion $ fullnameFromCatName $ minimum catnames
-        max = dropVersion $ fullnameFromCatName $ maximum catnames
+  useDesc' <- readUseDesc
+  useDescPackage' <- readUseDescPackage min' max'
+  mapM_ (use useDesc' useDescPackage') catnames
+  where min' = dropVersion $ fullnameFromCatName $ minimum catnames
+        max' = dropVersion $ fullnameFromCatName $ maximum catnames
 
 use :: UseDescriptions -> UseDescriptions -> (String, String) -> IO ()
-use useDesc useDescPackage catname = do
+use useDesc' useDescPackage' catname = do
   iUse <- readIUse fnIUse
   pUse <- readUse  fnPUse
   let len = maximum $ map length iUse
-  use' catname len useDesc useDescPackage iUse pUse
+  use' catname len useDesc' useDescPackage' iUse pUse
   where fnIUse = iUseFromCatName catname
         fnPUse = useFromCatName catname
 
@@ -41,9 +41,9 @@ use' :: (String, String) -> Int -> UseDescriptions -> UseDescriptions ->
         [String] -> [String] -> IO ()
 
 use' catname _ _ _ [] _ = putStr "No USE flags for " >> putCatNameLn catname
-use' catname len useDesc useDescPackage iUse pUse = do
+use' catname len useDesc' useDescPackage' iUse pUse = do
   putStr "USE flags for " >> putCatNameLn catname
-  mapM_ (format len useDesc useDescPackage pUse) iUse
+  mapM_ (format len useDesc' useDescPackage' pUse) iUse
   putChar '\n'
 
 ----------------------------------------------------------------
@@ -51,7 +51,7 @@ use' catname len useDesc useDescPackage iUse pUse = do
 format :: Int -> UseDescriptions -> UseDescriptions ->
           [String] -> String -> IO ()
 
-format len useDesc useDescPackage pUse iUse =
+format len useDesc' useDescPackage' pUse iUse =
   inst >> putStr (pad len ' ' iUse) >> off >> putStr " : " >> desc
   where
     inst = if iUse `elem` pUse
@@ -59,10 +59,10 @@ format len useDesc useDescPackage pUse iUse =
             else putStr "   " >> blue
 
     desc = do
-      end <- desc' useDescPackage
+      end <- desc' useDescPackage'
       unless end (do
-        end <- desc' useDesc
-        unless end (putStrLn "<< no description >>"))
+        end' <- desc' useDesc'
+        unless end' (putStrLn "<< no description >>"))
 
     desc' descs = do
       r <- HashTable.lookup descs iUse 

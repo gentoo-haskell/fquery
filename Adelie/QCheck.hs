@@ -6,9 +6,8 @@ module Adelie.QCheck (qCheck) where
 
 import Char               (isHexDigit)
 import IO
-import Monad              (unless)
-import System
-import System.Process     (runProcess, waitForProcess)
+
+import System.Process     (runProcess, waitForProcess, ProcessHandle)
 import System.Posix.Files (getFileStatus)
 import System.Posix.IO    (createPipe, fdToHandle)
 
@@ -40,10 +39,10 @@ check' (Dir _) (g, b) = return (False, (g+1, b))
 check' (Obj o m _) (g, b) = do
   r <- try (getFileStatus o)
   case r of
-    Left e -> do
+    Left _e -> do
       inRed (putStr "!!! ") >> putStr o >> putStrLn " does not exist"
       return (False, (g, b+1))
-    Right stat -> do
+    Right _stat -> do
       (rd, wr) <- createPipeHandle
       runMD5sum o (Just wr) >>= waitForProcess
       ln <- hGetLine rd
@@ -59,17 +58,19 @@ check' (Sym _ _ _) (g, b) = return (False, (g+1, b))
 
 createPipeHandle :: IO (Handle, Handle)
 createPipeHandle = do
-  (read, write) <- createPipe
-  hRead  <- fdToHandle read
+  (read', write) <- createPipe
+  hRead  <- fdToHandle read'
   hWrite <- fdToHandle write
   return (hRead, hWrite)
 
 ----------------------------------------------------------------
-
-runMD5sum f stdout = runProcess md5sum [f] Nothing Nothing stdin stdout stderr
+runMD5sum :: String
+             -> Maybe Handle
+             -> IO ProcessHandle
+runMD5sum f stdout' = runProcess md5sum [f] Nothing Nothing stdin' stdout' stderr'
   where md5sum = "/usr/bin/md5sum"
-        stdin  = Nothing
-        stderr = Nothing
+        stdin'  = Nothing
+        stderr' = Nothing
 
 putMD5error :: String -> IO ()
 putMD5error file =

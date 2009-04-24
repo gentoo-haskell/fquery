@@ -33,14 +33,15 @@ contentsFromCatName (cat, name) = concatPath [portageDB,cat,name,"CONTENTS"]
 
 readContents :: (Contents -> a -> IO (Bool, a)) -> FilePath -> a -> IO a
 readContents f fn a = do
-  r <- try read
+  r <- try read'
   case r of
     Left  _  -> return a
     Right a' -> return a'
   where
-    read = (bracket (openFile fn ReadMode)
-                    hClose
-                    (readContents' f a))
+    read' =
+      bracket (openFile fn ReadMode)
+              hClose
+              (readContents' f a)
 
 readContents' :: (Contents -> a -> IO (Bool, a)) -> a -> Handle -> IO a
 readContents' f a fp = do
@@ -84,7 +85,10 @@ contentsParser ('s':'y':'m':' ':ln0) = (Sym link target time)
         (time', target') = break2 (not.isDigit) ln2
         target = reverse target'
         time = digitsToInt (reverse time')
+contentsParser cont = error $ "contentsParser: 'dir: /obj: /sym: ' not found in " ++ show cont
 
+breakLink :: String -> (String, String)
 breakLink (' ':'-':'>':' ':xs) = ([], xs)
 breakLink (x:xs) = (x:as, bs)
   where (as, bs) = breakLink xs
+breakLink [] = error "breakLink: ' -> ' not found"

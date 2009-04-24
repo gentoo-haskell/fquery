@@ -1,0 +1,4 @@
+ * make fquery a drop-in replacement of equery:
+    o outpout compatible
+    o options full
+ * explore attoparsec in search of faster performance

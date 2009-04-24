@@ -7,7 +7,7 @@ module Adelie.QChangelog (
   qLogFile
 ) where
 
-import Char   (isAlpha, isDigit, isSpace)
+import Char   (isDigit, isSpace)
 import Monad  (unless)
 
 import Adelie.Colour
@@ -35,8 +35,8 @@ qChangelog (x:y:_)  = mapM_ (changelog (Just y)) =<< findInstalledPackages [x]
 changelog :: Maybe String -> (String, String) -> IO ()
 changelog end catname@(_, name) = do
   putStr "ChangeLog since " >> putCatNameLn catname
-  log <- readFile (logFile catname)
-  puts name end log
+  log' <- readFile (logFile catname)
+  puts name end log'
 
 ----------------------------------------------------------------
 
@@ -48,9 +48,9 @@ puts inst end ('#':l) = puts inst end (dropUntilAfter isNewLine l)
 puts inst end ('*':l0) = do
   case maybeCompareVersion package end of
     GT -> puts inst end next
-    otherwise -> case compareVersion inst package of
+    _  -> case compareVersion inst package of
       LT -> putSection package date >> putDesc ls >> puts inst end next
-      otherwise -> puts inst end next
+      _  -> puts inst end next
   where (section, next) = breakSection l0
         (line, ls) = break2 isNewLine section
         (l1, l2) = break2 ('(' ==) line
@@ -96,8 +96,7 @@ putDesc' str = do
       putBody body
     else
       putBody str
-  where str1 = dropWhile isSpace str
-        (header, body) = break2 (':' ==) str
+  where (header, body) = break2 (':' ==) str
 
 doublelines :: String -> [String]
 doublelines str =
@@ -111,7 +110,7 @@ doublelines str =
 beginsWithDate :: String -> Bool
 beginsWithDate []   = False
 beginsWithDate [_]  = False
-beginsWithDate (x:y:xs)
+beginsWithDate (x:y:_)
   | not (isDigit x)         = False
   | not (isDigitOrSpace y)  = False
   | otherwise = True
@@ -133,9 +132,9 @@ putHeader str0 = do
 
 putFiles :: Int -> [String] -> IO ()
 putFiles _ [] = putChar '\n'
-putFiles rem (";":files) = putFiles rem files
-putFiles rem (f:files) =
-  if rem < len
+putFiles rem' (";":files) = putFiles rem' files
+putFiles rem' (f:files) =
+  if rem' < len
     then do
       putChar '\n' >> putStr "    "
       putFiles 76 (f:files)
@@ -144,7 +143,7 @@ putFiles rem (f:files) =
       if (last f == ',')
         then putStr (dropTail 1 f) >> off >> putStr ", "
         else putStr f >> off >> putChar ' '
-      putFiles (rem-len-1) files
+      putFiles (rem' - len - 1) files
   where len = length f
 
 ----------------------------------------------------------------
@@ -155,7 +154,7 @@ putBody [] = putChar '\n'
 putBody ('#':c0) =
   case bug of
     [] -> putChar '#' >> putBody cs
-    otherwise -> inMagenta (putStr ('#':bug)) >> putBody cs
+    _  -> inMagenta (putStr ('#':bug)) >> putBody cs
   where (bug, cs) = span (isDigitOrSpace) c0
 
 putBody (c:cs) = putChar c >> putBody cs

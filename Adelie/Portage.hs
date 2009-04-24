@@ -15,14 +15,22 @@ module Adelie.Portage (
   findInstalledPackages
 ) where
 
-import Char       (isDigit)
-import Directory  (getDirectoryContents)
-import List       (intersperse, sort)
-import Monad      (liftM)
+import Data.Char         (isDigit)
+import System.Directory  (getDirectoryContents, doesDirectoryExist)
+import Data.List         (intersperse, sort)
+import Control.Monad     (liftM)
 
 import Adelie.ListEx
 import Adelie.Config
 
+-- Skips non-directory entries from returned list
+-- (symlinks to world file in our case)
+-- racy actually
+safeGetDirectoryContents :: FilePath -> IO [FilePath]
+safeGetDirectoryContents dir =
+    do yet <- doesDirectoryExist dir
+       if yet then getDirectoryContents dir
+              else return []
 
 portageProfiles :: String
 portageProfiles = portageTree ++ "/profiles"
@@ -54,12 +62,12 @@ fullnameFromCatName (cat, name) = cat ++ '/':name
 
 allInstalledPackages :: IO [(String, String)]
 allInstalledPackages = do
-  cats <- liftM (sort.filter filterHidden) (getDirectoryContents portageDB)
+  cats <- liftM (sort.filter filterHidden) (safeGetDirectoryContents portageDB)
   concatMapM allInstalledPackagesInCategory cats
 
 allInstalledPackagesInCategory :: String -> IO [(String, String)]
 allInstalledPackagesInCategory cat = do
-  names <- liftM (sort.filter filterHidden) (getDirectoryContents path)
+  names <- liftM (sort.filter filterHidden) (safeGetDirectoryContents path)
   return $ map (\ a -> (cat, a)) names
   where path = portageDB ++ '/':cat
 
@@ -75,18 +83,20 @@ findInstPackages name =
     else findInstPackagesInCategory a b
   where (a, b) = break2 (== '/') name
 
+findInstPackages' :: String -> IO [(String, String)]
 findInstPackages' pack = do
-  cats  <- liftM (sort.filter filterHidden) (getDirectoryContents portageDB)
+  cats  <- liftM (sort.filter filterHidden) (safeGetDirectoryContents portageDB)
   concatMapM (flip findInstPackagesInCategory pack) cats
 
+findInstPackagesInCategory :: String -> String -> IO [(String, String)]
 findInstPackagesInCategory cat pack = do
-  packs <- liftM (sort.filter cond) (getDirectoryContents (portageDB++'/':cat))
+  packs <- liftM (sort.filter cond) (safeGetDirectoryContents (portageDB++'/':cat))
   return (zip (repeat cat) packs)
   where
     cond ('.':_) = False
     cond p = (pack == p) || (pack == dropVersion p)
 
 ----------------------------------------------------------------
-
+filterHidden :: String -> Bool
 filterHidden ('.':_) = False
 filterHidden _ = True

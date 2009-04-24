@@ -11,7 +11,6 @@ import List       (delete)
 import Monad      (when)
 import Text.Regex (Regex, matchRegex, mkRegex)
 
-import Adelie.Colour
 import Adelie.Contents
 import Adelie.ListEx
 import Adelie.Portage
@@ -76,5 +75,5 @@ mapMaybeOnce :: (a -> Maybe b) -> [a] -> Bool
 mapMaybeOnce _ [] = False
 mapMaybeOnce f (x:xs) =
   case f x of 
-    Just a  -> True
+    Just _a  -> True
     Nothing -> mapMaybeOnce f xs

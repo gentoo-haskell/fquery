@@ -28,8 +28,11 @@ qList types args = mapM_ (list puts) =<< findInstalledPackages args
       ListDirs  -> putsD
       ListFiles -> putsF
       ListLinks -> putsL
-      otherwise -> putsA
+      _         -> putsA
 
+list :: (Contents -> () -> IO (Bool, ()))
+        -> (String, String)
+        -> IO ()
 list puts catname = do
   putStr "Contents of " >> putCatNameLn catname
   readContents puts contents ()
@@ -43,7 +46,7 @@ putsA, putsD, putsF, putsL :: Contents -> () -> IO (Bool, ())
 putsA (Obj o _ _) _ = putStrLn o      >> return (False, ())
 putsA c _           = putContentsLn c >> return (False, ())
 
-putsD c@(Dir d) _   = putContentsLn c >> return (False, ())
+putsD c@(Dir _) _   = putContentsLn c >> return (False, ())
 putsD _ _           = return (False, ())
 
 putsF (Obj o _ _) _ = putStrLn o >> return (False, ())

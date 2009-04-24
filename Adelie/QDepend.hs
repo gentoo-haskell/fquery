@@ -41,9 +41,9 @@ dep' provided fullname =
         fnIUse = concatPath [portageDB,fullname,"USE"]
 
 puts :: String -> [String] -> [Dependency] -> IO ()
-puts str provided iWant = mapM_ print perms
+puts str provided iWant = mapM_ print' perms
   where perms = [ (p, w) | p <- provided, w <- iWant, w `satisfiedBy` p ]
-        print (p, w) =
+        print' (_p, w) =
           white >> putStr (pad 32 ' ' str) >> off >>
           putStr "\t( " >> putDependency w >> putStrLn " )"
 
