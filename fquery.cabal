@@ -16,7 +16,8 @@ Description:	Installed package query tool for Gentoo Linux
 
 Category:	Gentoo
 
-Build-depends:	base, haskell98, parsec, unix, regex-compat, process, directory
+Build-Type:	Configure
+Build-Depends:	base, haskell98, parsec, unix, regex-compat, process, directory
 Extra-Source-Files:
 		configure
 		Adelie/Config.hs.in
@@ -46,7 +47,7 @@ Other-Modules:	Adelie.Colour
 		Adelie.Use
 		Adelie.UseDesc
 
-GHC-Options:	-O2 -Wall -Werror
+GHC-Options:	-O2 -Wall
 -- GHC-Options:	-Werror
 
 c-sources:	Adelie/opts.c
