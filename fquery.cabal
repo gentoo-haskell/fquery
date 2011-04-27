@@ -1,5 +1,5 @@
 Name:		fquery
-Version:	0.2.1.1
+Version:	0.2.1.2
 
 Author:		David Wang <millimillenary@gmail.com>, Sergei Trofimovich <slyfox@inbox.ru>
 Maintainer:	Sergei Trofimovich <slyfox@inbox.ru>
@@ -18,7 +18,7 @@ Description:	Installed package query tool for Gentoo Linux
 Category:	Gentoo
 
 Build-Type:	Configure
-Build-Depends:	base >= 2 && < 4, haskell98, parsec, unix, regex-compat, process, directory
+Build-Depends:	base >= 2 && < 5, haskell98, parsec, unix, regex-compat, process, directory
 
 Extra-Source-Files:
 		configure
