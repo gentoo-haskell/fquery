@@ -10,8 +10,8 @@ module Adelie.Use (
   readIUse
 ) where
 
-import List   (nub, sort)
-import Monad  (liftM)
+import Data.List (nub, sort)
+import Control.Monad (liftM)
 
 import Adelie.Portage
 

@@ -15,7 +15,7 @@ module Adelie.Colour (
     off2
 ) where
 
-import Monad (when)
+import Control.Monad (when)
 
 import Adelie.Options
 

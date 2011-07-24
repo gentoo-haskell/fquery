@@ -12,9 +12,9 @@ module Adelie.ListEx (
   pad
 ) where
 
-import Char       (digitToInt)
-import Data.List  (foldl')
-import Monad      (liftM)
+import Data.Char (digitToInt)
+import Data.List (foldl')
+import Control.Monad (liftM)
 
 ----------------------------------------------------------------
 

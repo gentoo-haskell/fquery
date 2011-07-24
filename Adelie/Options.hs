@@ -1,5 +1,4 @@
-{-# OPTIONS -fglasgow-exts #-}
-
+{-# LANGUAGE ForeignFunctionInterface #-}
 -- Options.hs
 --
 -- We keep some globals in C so we don't have to pass them around everywhere.

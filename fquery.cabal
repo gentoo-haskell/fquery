@@ -1,9 +1,9 @@
 Name:		fquery
-Version:	0.2.1.2
+Version:	0.2.1.3
 
 Author:		David Wang <millimillenary@gmail.com>, Sergei Trofimovich <slyfox@inbox.ru>
 Maintainer:	Sergei Trofimovich <slyfox@inbox.ru>
-Copyright:	2006 David Wang, 2009 Sergei Trofimovich
+Copyright:	2006 David Wang, 2009-2011 Sergei Trofimovich
 
 License-File:	LICENCE.txt
 License:	OtherLicense
@@ -18,7 +18,13 @@ Description:	Installed package query tool for Gentoo Linux
 Category:	Gentoo
 
 Build-Type:	Configure
-Build-Depends:	base >= 2 && < 5, haskell98, parsec, unix, regex-compat, process, directory
+Build-Depends:	base >= 2 && < 5,
+		directory,
+		extensible-exceptions,
+		parsec,
+		process,
+		regex-compat,
+		unix
 
 Extra-Source-Files:
 		configure
@@ -32,6 +38,7 @@ Other-Modules:	Adelie.Colour
 		Adelie.CompareVersion
 		Adelie.Contents
 		Adelie.Depend
+		Adelie.Error
 		Adelie.ListEx
 		Adelie.Options
 		Adelie.Portage

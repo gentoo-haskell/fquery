@@ -4,7 +4,7 @@
 
 module Adelie.QHasUse (qHasUse) where
 
-import Monad (when)
+import Control.Monad (when)
 
 import Adelie.Colour
 import Adelie.Portage

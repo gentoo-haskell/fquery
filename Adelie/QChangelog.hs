@@ -7,8 +7,8 @@ module Adelie.QChangelog (
   qLogFile
 ) where
 
-import Char   (isDigit, isSpace)
-import Monad  (unless)
+import Data.Char (isDigit, isSpace)
+import Control.Monad (unless)
 
 import Adelie.Colour
 import Adelie.CompareVersion

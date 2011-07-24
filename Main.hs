@@ -4,7 +4,7 @@
 
 module Main (main) where
 
-import System (getArgs, getProgName)
+import System.Environment (getArgs, getProgName)
 
 import Adelie.Colour
 import Adelie.Options

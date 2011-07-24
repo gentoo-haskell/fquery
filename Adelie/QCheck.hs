@@ -4,8 +4,8 @@
 
 module Adelie.QCheck (qCheck) where
 
-import Char               (isHexDigit)
-import IO
+import Data.Char          (isHexDigit)
+import System.IO
 
 import System.Process     (runProcess, waitForProcess, ProcessHandle)
 import System.Posix.Files (getFileStatus)
@@ -13,6 +13,7 @@ import System.Posix.IO    (createPipe, fdToHandle)
 
 import Adelie.Colour
 import Adelie.Contents
+import qualified Adelie.Error as E
 import Adelie.Portage
 import Adelie.Pretty
 
@@ -37,7 +38,7 @@ check' :: Contents -> Count -> IO (Bool, Count)
 check' (Dir _) (g, b) = return (False, (g+1, b))
 
 check' (Obj o m _) (g, b) = do
-  r <- try (getFileStatus o)
+  r <- E.try (getFileStatus o)
   case r of
     Left _e -> do
       inRed (putStr "!!! ") >> putStr o >> putStrLn " does not exist"

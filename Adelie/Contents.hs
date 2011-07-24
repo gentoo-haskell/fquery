@@ -11,8 +11,9 @@ module Adelie.Contents (
   readContents
 ) where
 
-import Char (isDigit, isHexDigit, isSpace)
-import IO
+import Data.Char (isDigit, isHexDigit, isSpace)
+import qualified Adelie.Error as E
+import System.IO
 
 import Adelie.Colour
 import Adelie.ListEx
@@ -33,15 +34,15 @@ contentsFromCatName (cat, name) = concatPath [portageDB,cat,name,"CONTENTS"]
 
 readContents :: (Contents -> a -> IO (Bool, a)) -> FilePath -> a -> IO a
 readContents f fn a = do
-  r <- try read'
+  r <- E.try read'
   case r of
     Left  _  -> return a
     Right a' -> return a'
   where
     read' =
-      bracket (openFile fn ReadMode)
-              hClose
-              (readContents' f a)
+      E.bracket (openFile fn ReadMode)
+                hClose
+                (readContents' f a)
 
 readContents' :: (Contents -> a -> IO (Bool, a)) -> a -> Handle -> IO a
 readContents' f a fp = do

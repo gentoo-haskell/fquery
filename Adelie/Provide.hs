@@ -7,7 +7,7 @@ module Adelie.Provide (
   readProvide
 ) where
 
-import Monad (liftM)
+import Control.Monad (liftM)
 
 import Adelie.Portage
 

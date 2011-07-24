@@ -5,7 +5,7 @@
 module Adelie.QUse (qUse) where
 
 import Data.HashTable as HashTable
-import Monad (mapM_, unless)
+import Control.Monad (unless)
 
 import Adelie.Colour
 import Adelie.ListEx

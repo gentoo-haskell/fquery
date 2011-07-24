@@ -4,14 +4,14 @@
 
 module Adelie.QSize (qSize) where
 
-import Directory            (doesDirectoryExist)
-import IO                   (try)
-import Monad                (mapM_, when)
+import System.Directory     (doesDirectoryExist)
+import Control.Monad        (when)
 import System.Posix.Files   (fileSize, getFileStatus)
 import System.Posix.Types   (FileOffset)
 
 import Adelie.Colour
 import Adelie.Contents
+import qualified Adelie.Error as E
 import Adelie.Portage
 import Adelie.Pretty
 
@@ -48,7 +48,7 @@ count (Dir d) (s,w,x,y,z) = do
     else return (False, (s,w,x,y,z+1)) 
 
 count (Obj o _ _) (s,w,x,y,z) = do
-  r <- try (getFileStatus o)
+  r <- E.try (getFileStatus o)
   case r of
     Left _err -> return (False, (s, w, x, y, z+1))
     Right st -> return (False, (s+fileSize st, w, x+1, y, z))

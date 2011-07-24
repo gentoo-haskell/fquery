@@ -4,7 +4,7 @@
 
 module Adelie.CompareVersion (compareVersion) where
 
-import Char (isDigit)
+import Data.Char (isDigit)
 
 import Adelie.ListEx (digitsToInt)
 

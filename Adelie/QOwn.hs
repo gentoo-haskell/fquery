@@ -7,8 +7,8 @@ module Adelie.QOwn (
   qOwnRegex
 ) where
 
-import List       (delete)
-import Monad      (when)
+import Data.List (delete)
+import Control.Monad (when)
 import Text.Regex (Regex, matchRegex, mkRegex)
 
 import Adelie.Contents

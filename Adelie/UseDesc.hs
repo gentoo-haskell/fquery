@@ -8,9 +8,9 @@ module Adelie.UseDesc (
   readUseDescPackage
 ) where
 
-import Char (isSpace)
+import Data.Char (isSpace)
 import Data.HashTable as HashTable
-import Monad (when)
+import Control.Monad (when)
 
 import Adelie.ListEx
 import Adelie.Portage
