@@ -19,6 +19,7 @@ import Text.ParserCombinators.Parsec.Language
 import Text.ParserCombinators.Parsec.Token
 
 import Adelie.Portage
+import qualified Adelie.Util as E
 
 type Version = String
 
@@ -39,7 +40,7 @@ dependFromCatName (cat, name) = concatPath [portageDB,cat,name,"RDEPEND"]
 
 readDepend :: FilePath -> [String] -> IO [Dependency]
 readDepend fn iUse = do
-  r <- (start_parser fn) `catch` (\ _ -> return $ Right [])
+  r <- (start_parser fn) `E.catchIOE` (\ _ -> return $ Right [])
   case r of
     Left err -> putStr "Parse error at " >> print err >> error "Aborting"
     Right x  -> return $ nub x

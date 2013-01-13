@@ -1,5 +1,5 @@
 Name:          fquery
-Version:       0.2.1.3
+Version:       0.2.1.4
 
 Author:        David Wang <millimillenary@gmail.com>, Sergei Trofimovich <slyfox@inbox.ru>
 Maintainer:    Sergei Trofimovich <slyfox@inbox.ru>
@@ -48,6 +48,7 @@ Executable fquery
         Adelie.QWant
         Adelie.Use
         Adelie.UseDesc
+        Adelie.Util
     GHC-Options: -O2 -Wall
     -- GHC-Options: -Werror
     C-Sources: Adelie/opts.c

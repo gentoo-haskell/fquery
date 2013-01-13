@@ -10,6 +10,7 @@ module Adelie.Provide (
 import Control.Monad (liftM)
 
 import Adelie.Portage
+import qualified Adelie.Util as E
 
 ----------------------------------------------------------------
 
@@ -19,4 +20,4 @@ provideFromCatName (cat,name) = concatPath [portageDB,cat,name,"PROVIDE"]
 ----------------------------------------------------------------
 
 readProvide :: FilePath -> IO [String]
-readProvide fn = (liftM words (readFile fn)) `catch` (\ _ -> return [])
+readProvide fn = (liftM words (readFile fn)) `E.catchIOE` (\ _ -> return [])
