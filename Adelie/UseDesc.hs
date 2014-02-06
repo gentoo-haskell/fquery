@@ -9,26 +9,26 @@ module Adelie.UseDesc (
 ) where
 
 import Data.Char (isSpace)
-import Data.HashTable as HashTable
+import qualified Data.HashTable.IO as HT
 import Control.Monad (when)
 
 import Adelie.ListEx
 import Adelie.Portage
 
-type UseDescriptions = HashTable String String
+type UseDescriptions = HT.BasicHashTable String String
 
 ----------------------------------------------------------------
 
 readUseDesc :: IO UseDescriptions
 readUseDesc = do
-  table <- HashTable.new (==) hashString
+  table <- HT.new
   ls <- readFile useDesc
   mapM_ (useParser table) (lines ls)
   return table
 
 useParser :: UseDescriptions -> String -> IO ()
 useParser _ ('#':_) = return ()
-useParser table line = insert table use desc
+useParser table line = HT.insert table use desc
   where (use, desc) = myBreak line
 
 myBreak :: String -> (String, String)
@@ -41,7 +41,7 @@ myBreak (x:xs) = (x:ys, zs)
 
 readUseDescPackage :: String -> String -> IO UseDescriptions
 readUseDescPackage start end = do
-  table <- HashTable.new (==) hashString
+  table <- HT.new
   ls <- readFile useDescPackage
   mapMUntil_ (useParser2 table start end) (lines ls)
   return table
@@ -58,7 +58,7 @@ useParser2 _ _ _ ('#':_) = return True
 useParser2 table start end str = do
   case mid start catname end of
       LT -> return True
-      EQ -> insert table use desc >> return True
+      EQ -> HT.insert table use desc >> return True
       GT -> return False
   where str' = reverse $ dropWhile isSpace $ reverse str
         (catname, rest) = break2 (':' ==) str'

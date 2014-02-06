@@ -4,7 +4,7 @@
 
 module Adelie.QUse (qUse) where
 
-import Data.HashTable as HashTable
+import qualified Data.HashTable.IO as HT
 import Control.Monad (unless)
 
 import Adelie.Colour
@@ -65,7 +65,7 @@ format len useDesc' useDescPackage' pUse iUse =
         unless end' (putStrLn "<< no description >>"))
 
     desc' descs = do
-      r <- HashTable.lookup descs iUse 
+      r <- HT.lookup descs iUse
       case r of
         Just d  -> puts d >> return True
         Nothing -> return False
