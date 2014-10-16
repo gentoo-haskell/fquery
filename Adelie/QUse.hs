@@ -6,7 +6,6 @@ module Adelie.QUse (qUse) where
 
 import qualified Data.HashTable.IO as HT
 import qualified Data.List as L
-import Data.Maybe (fromMaybe)
 import Control.Monad (unless)
 
 import Adelie.Colour
@@ -36,7 +35,7 @@ use :: UseDescriptions -> UseDescriptions -> UseDescriptions
 use useDesc' useDescPackage' useDescExpand' catname = do
   iUse <- readIUse fnIUse
   pUse <- readUse  fnPUse
-  let iUse' = fmap (\x -> fromMaybe x (L.stripPrefix "+" x)) iUse
+  let iUse' = fmap stripUse iUse
       len   = maximum $ map length iUse'
   use' catname len useDesc' useDescPackage' useDescExpand' iUse' pUse
   where fnIUse = iUseFromCatName catname
@@ -49,6 +48,14 @@ use' catname len useDesc' useDescPackage' useDescExpand' iUse pUse = do
   putStr "USE flags for " >> putCatNameLn catname
   mapM_ (format len useDesc' useDescPackage' useDescExpand' pUse) iUse
   putChar '\n'
+
+
+-- |Strip prefixed '+' and '-' settings from a USE flag string.
+stripUse :: String -> String
+stripUse ('-':xs) = xs
+stripUse ('+':xs) = xs
+stripUse xs       = xs
+
 
 ----------------------------------------------------------------
 
