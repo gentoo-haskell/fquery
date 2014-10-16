@@ -107,6 +107,5 @@ isBlank = null . dropWhile isSpace
 -- |Removes a trailing newline.
 rmTrailingNewline :: String -> String
 rmTrailingNewline [] = []
-rmTrailingNewline xs = case last xs of
-  '\n' -> init xs
-  _    -> xs
+rmTrailingNewline [x, '\n'] = [x]
+rmTrailingNewline (x:xs)    = x : rmTrailingNewline xs
