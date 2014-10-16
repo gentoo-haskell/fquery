@@ -7,6 +7,7 @@ module Adelie.Portage (
   portageDB,
   useDesc,
   useDescPackage,
+  useExpDescDir,
 
   dropVersion,
   concatPath,
@@ -17,7 +18,7 @@ module Adelie.Portage (
 
 import Data.Char         (isDigit)
 import System.Directory  (getDirectoryContents, doesDirectoryExist)
-import Data.List         (intersperse, sort)
+import Data.List         (sort)
 import Control.Monad     (liftM)
 
 import Adelie.FileEx
@@ -43,6 +44,10 @@ useDesc = portageProfiles ++ "/use.desc"
 -- Where the package specific use flag descriptions are, 'use.local.desc'.
 useDescPackage :: String
 useDescPackage = portageProfiles ++ "/use.local.desc"
+
+-- Where the USE Expand descriptions are.
+useExpDescDir :: String
+useExpDescDir = portageProfiles ++ "/desc"
 
 ----------------------------------------------------------------
 

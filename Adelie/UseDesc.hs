@@ -5,7 +5,8 @@
 module Adelie.UseDesc (
   UseDescriptions,
   readUseDesc,
-  readUseDescPackage
+  readUseDescPackage,
+  readUseExpDesc
 ) where
 
 import Data.Char (isSpace)
@@ -13,7 +14,10 @@ import qualified Data.HashTable.IO as HT
 import Control.Monad (when)
 
 import Adelie.ListEx
+import Adelie.FileEx
 import Adelie.Portage
+
+import System.Directory
 
 type UseDescriptions = HT.BasicHashTable String String
 
@@ -63,7 +67,38 @@ useParser2 table start end str =
   where str' = reverse $ dropWhile isSpace $ reverse str
         (catname, rest) = break2 (':' ==) str'
         (use, desc) = myBreak rest
-  
+
+----------------------------------------------------------------
+
+readUseExpDesc :: IO UseDescriptions
+readUseExpDesc = do
+  table <- HT.new
+  files <- noDirs                         .
+             addPathPrefix useExpDescDir  .
+             getDirectoryContents         $
+             useExpDescDir
+  fileContents <- mapM (\fp -> fmap
+                         (useExpDescToUseDesc fp)
+                         (readFile fp))
+                       files
+  mapM_ (useParser table) (lines (concat fileContents))
+  return table
+
+-- |Use expand descriptions don't contain the first part of the USE
+-- flag in the files, so 'libreoffice_extensions_nlpsolver - desc'
+-- is actually 'nlpsolver - desc'.
+-- We have to fix that.
+useExpDescToUseDesc :: FilePath -- ^ the file the Use desc is part of
+                    -> String   -- ^ the file contents
+                    -> String   -- ^ the fixed file contents
+useExpDescToUseDesc fp fc =
+  unlines                                   .
+  addPrefix
+    (flip (++) "_" . noExt . basename $ fp) .
+  lines                                     .
+  filterComments                            $
+  fc
+
 ----------------------------------------------------------------
 
 -- In Haskell, vim-core > vim
