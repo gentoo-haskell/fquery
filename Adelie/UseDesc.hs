@@ -55,7 +55,7 @@ mapMUntil_ f (x:xs) = do
 useParser2 :: UseDescriptions -> String -> String -> String -> IO Bool
 useParser2 _ _ _ [] = return True
 useParser2 _ _ _ ('#':_) = return True
-useParser2 table start end str = do
+useParser2 table start end str =
   case mid start catname end of
       LT -> return True
       EQ -> HT.insert table use desc >> return True
