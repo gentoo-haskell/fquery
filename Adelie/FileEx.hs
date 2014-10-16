@@ -8,6 +8,7 @@ import System.Directory
 
 
 type FileExt = String
+type Line    = String
 
 
 -- |Converts '/home/user/foo.png' to 'foo.png'
@@ -62,11 +63,55 @@ noExt fp
   | otherwise = fp
 
 
--- |Filter all comments and empty lines of a file content.
-filterComments :: String -> String
-filterComments xs =
-  unlines . fmap (fc' . dropWhile isSpace) . lines $ xs
+-- |Rm all commentary lines of a file content.
+rmComments :: String -> String
+rmComments xs =
+  rmTrailingNewline  .
+  unlines            .
+  rmCommentsL        .
+  lines              $
+  xs
+
+
+-- |Same as 'rmComments', but on a list of lines.
+rmCommentsL :: [Line] -> [Line]
+rmCommentsL = filter (not . isComment)
+
+
+-- |Rm all blank lines.
+rmBlank :: String -> String
+rmBlank xs =
+  rmTrailingNewline  .
+  unlines            .
+  rmBlankL           .
+  lines              $
+  xs
+
+
+-- |Same as 'rmBlank', but on a list of lines.
+rmBlankL :: [Line] -> [Line]
+rmBlankL = filter (not . isBlank)
+
+
+-- |Whether the line is a comment.
+isComment :: Line -> Bool
+isComment = iC' . dropWhile isSpace
   where
-    fc' []      = ""
-    fc' ('#':_) = ""
-    fc' xs'     = xs'
+    iC' ('#':_) = True
+    iC' _       = False
+
+
+-- |Whether the line is blank (only spaces or tabs).
+isBlank :: Line -> Bool
+isBlank = iB' . dropWhile isSpace
+  where
+    iB' [] = True
+    iB' _  = False
+
+
+-- |Removes a trailing newline.
+rmTrailingNewline :: String -> String
+rmTrailingNewline [] = []
+rmTrailingNewline xs = case last xs of
+  '\n' -> init xs
+  _    -> xs
