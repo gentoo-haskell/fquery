@@ -20,6 +20,7 @@ import System.Directory  (getDirectoryContents, doesDirectoryExist)
 import Data.List         (intersperse, sort)
 import Control.Monad     (liftM)
 
+import Adelie.FileEx
 import Adelie.ListEx
 import Adelie.Config
 
@@ -51,9 +52,6 @@ dropVersion ('-':x:xs)
   | isDigit x = []
   | otherwise = '-':x:(dropVersion xs)
 dropVersion (x:xs) = x:(dropVersion xs)
-
-concatPath :: [String] -> String
-concatPath = concat.intersperse "/"
 
 fullnameFromCatName :: (String, String) -> String
 fullnameFromCatName (cat, name) = cat ++ '/':name
