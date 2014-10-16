@@ -43,11 +43,11 @@ cmpExt checkExt = (==) checkExt . getExt
 -- |Get the extension of a file.
 getExt :: FilePath -> FileExt
 getExt fp
-  | hasExt fp = last .
-    splitBy (== '.') .
-    last             .
-    splitBy (== '/') $
-    fp
+  | hasExt fp = last
+    . splitBy (== '.')
+    . last
+    . splitBy (== '/')
+    $ fp
   | otherwise = ""
 
 
@@ -65,12 +65,11 @@ noExt fp
 
 -- |Rm all commentary lines of a file content.
 rmComments :: String -> String
-rmComments xs =
-  rmTrailingNewline  .
-  unlines            .
-  rmCommentsL        .
-  lines              $
-  xs
+rmComments =
+  rmTrailingNewline
+  . unlines
+  . rmCommentsL
+  . lines
 
 
 -- |Same as 'rmComments', but on a list of lines.
@@ -80,12 +79,11 @@ rmCommentsL = filter (not . isComment)
 
 -- |Rm all blank lines.
 rmBlank :: String -> String
-rmBlank xs =
-  rmTrailingNewline  .
-  unlines            .
-  rmBlankL           .
-  lines              $
-  xs
+rmBlank =
+  rmTrailingNewline
+  . unlines
+  . rmBlankL
+  . lines
 
 
 -- |Same as 'rmBlank', but on a list of lines.
