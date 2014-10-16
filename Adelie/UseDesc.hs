@@ -78,7 +78,7 @@ readUseExpDesc = do
              getDirectoryContents         $
              useExpDescDir
   fileContents <- mapM (\fp -> fmap
-                         (useExpDescToUseDesc fp)
+                         (unexpandUse fp . rmBlank . rmComments)
                          (readFile fp))
                        files
   mapM_ (useParser table) (lines (concat fileContents))
@@ -88,15 +88,14 @@ readUseExpDesc = do
 -- flag in the files, so 'libreoffice_extensions_nlpsolver - desc'
 -- is actually 'nlpsolver - desc'.
 -- We have to fix that.
-useExpDescToUseDesc :: FilePath -- ^ the file the Use desc is part of
-                    -> String   -- ^ the file contents
-                    -> String   -- ^ the fixed file contents
-useExpDescToUseDesc fp fc =
+unexpandUse :: FilePath -- ^ the file the Use desc is part of
+            -> String   -- ^ the file contents, with comments etc removed
+            -> String   -- ^ the fixed file contents
+unexpandUse fp fc =
   unlines                                   .
   addPrefix
     (flip (++) "_" . noExt . basename $ fp) .
-  lines                                     .
-  filterComments                            $
+  lines                                     $
   fc
 
 ----------------------------------------------------------------
