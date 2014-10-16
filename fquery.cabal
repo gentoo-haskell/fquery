@@ -65,4 +65,4 @@ Executable fquery
 
 Source-Repository head
   type:     git
-  location: git://repo.or.cz/fquery.git
+  location: git://github.com/gentoo-haskell/fquery.git
