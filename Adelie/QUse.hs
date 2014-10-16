@@ -6,6 +6,7 @@ module Adelie.QUse (qUse) where
 
 import qualified Data.HashTable.IO as HT
 import qualified Data.List as L
+import Data.Maybe (fromMaybe)
 import Control.Monad (unless)
 
 import Adelie.Colour
@@ -33,9 +34,7 @@ use :: UseDescriptions -> UseDescriptions -> (String, String) -> IO ()
 use useDesc' useDescPackage' catname = do
   iUse <- readIUse fnIUse
   pUse <- readUse  fnPUse
-  let iUse' = fmap (\x -> case L.stripPrefix "+" x of
-                      Just xs' -> xs'
-                      Nothing  -> x) iUse
+  let iUse' = fmap (\x -> fromMaybe x (L.stripPrefix "+" x)) iUse
       len   = maximum $ map length iUse'
   use' catname len useDesc' useDescPackage' iUse' pUse
   where fnIUse = iUseFromCatName catname
