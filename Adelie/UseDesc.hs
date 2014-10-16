@@ -110,7 +110,7 @@ myCompare  _ [] = LT
 myCompare []  _ = GT
 myCompare (a:as) (b:bs) =
   if r == EQ
-    then myCompare as bs 
+    then myCompare as bs
     else r
   where r = compare a b
 
