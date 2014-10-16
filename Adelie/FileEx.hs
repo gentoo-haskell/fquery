@@ -101,10 +101,7 @@ isComment = iC' . dropWhile isSpace
 
 -- |Whether the line is blank (only spaces or tabs).
 isBlank :: Line -> Bool
-isBlank = iB' . dropWhile isSpace
-  where
-    iB' [] = True
-    iB' _  = False
+isBlank = null . dropWhile isSpace
 
 
 -- |Removes a trailing newline.
