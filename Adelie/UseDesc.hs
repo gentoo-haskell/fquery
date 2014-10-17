@@ -18,6 +18,7 @@ import Adelie.FileEx
 import Adelie.Portage
 
 import System.Directory
+import System.FilePath.Posix (takeBaseName, splitExtension)
 
 type UseDescriptions = HT.BasicHashTable String String
 
@@ -92,11 +93,13 @@ unexpandUse :: FilePath -- ^ the file the Use desc is part of
             -> String   -- ^ the file contents, with comments etc removed
             -> String   -- ^ the fixed file contents
 unexpandUse fp fc =
-  unlines                                   .
+  unlines                                       .
   addPrefix
-    (flip (++) "_" . noExt . basename $ fp) .
-  lines                                     $
+    (flip (++) "_" . noExt . takeBaseName $ fp) .
+  lines                                         $
   fc
+    where
+      noExt = fst . splitExtension
 
 ----------------------------------------------------------------
 
