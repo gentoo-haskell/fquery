@@ -37,15 +37,5 @@ foldMUntil f g a (x:xs) = do
 pad :: Int -> a -> [a] -> [a]
 pad n a str = take n (str ++ repeat a)
 
--- |Split an array into subarrays depending on a given condition.
-splitBy :: (a -> Bool) -- ^ condition
-        -> [a]         -- ^ array to split
-        -> [[a]]       -- ^ splitted array
-splitBy f s =
-  case dropWhile f s of
-    [] -> []
-    s' -> w : splitBy f s''
-      where (w, s'') = break f s'
-
 addPrefix :: [a] -> [[a]] -> [[a]]
 addPrefix = map . (++)
