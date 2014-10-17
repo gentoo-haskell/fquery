@@ -74,15 +74,15 @@ useParser2 table start end str =
 readUseExpDesc :: IO UseDescriptions
 readUseExpDesc = do
   table <- HT.new
-  files <- noDirs                         .
-             addPathPrefix useExpDescDir  .
-             getDirectoryContents         $
-             useExpDescDir
+  files <- noDirs
+           . addPathPrefix useExpDescDir
+           . getDirectoryContents
+           $ useExpDescDir
   fileContents <- mapM (\fp -> fmap
                          (unexpandUse fp . rmBlank . rmComments)
                          (readFile fp))
                        files
-  mapM_ (useParser table) (lines (concat fileContents))
+  mapM_ (useParser table) (lines . concat $ fileContents)
   return table
 
 -- |Use expand descriptions don't contain the first part of the USE
@@ -93,13 +93,12 @@ unexpandUse :: FilePath -- ^ the file the Use desc is part of
             -> String   -- ^ the file contents, with comments etc removed
             -> String   -- ^ the fixed file contents
 unexpandUse fp fc =
-  unlines                                       .
-  addPrefix
-    (flip (++) "_" . noExt . takeBaseName $ fp) .
-  lines                                         $
-  fc
-    where
-      noExt = fst . splitExtension
+  unlines
+  . addPrefix (flip (++) "_" . noExt . takeBaseName $ fp)
+  . lines
+  $ fc
+  where
+    noExt = fst . splitExtension
 
 ----------------------------------------------------------------
 

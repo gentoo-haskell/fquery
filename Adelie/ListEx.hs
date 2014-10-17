@@ -30,9 +30,9 @@ foldMUntil :: Monad m => (a -> b -> m a) -> (a -> Bool) -> a -> [b] -> m a
 foldMUntil _ _ a [] = return a
 foldMUntil f g a (x:xs) = do
   a' <- f a x
-  case g a' of
-    True  -> return a'
-    False -> foldMUntil f g a' xs
+  if g a'
+    then return a'
+    else foldMUntil f g a' xs
 
 pad :: Int -> a -> [a] -> [a]
 pad n a str = take n (str ++ repeat a)
