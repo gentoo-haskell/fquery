@@ -69,13 +69,11 @@ format len useDesc' useDescPackage' useDescExpand' pUse iUse =
             then putStr " + " >> red
             else putStr "   " >> blue
 
-    desc = do
-      end  <- desc' useDescExpand'
-      unless end (do
-        end' <- desc' useDescPackage'
-        unless end' (do
-          end'' <- desc' useDesc'
-          unless end'' (putStrLn "<< no description >>")))
+    desc =
+      desc' useDescExpand'    >>= \x -> unless x
+        $ desc' useDescPackage' >>= \y -> unless y
+          $ desc' useDesc'        >>= \z -> unless z
+            $ putStrLn "<< no description >>"
 
     desc' descs = do
       r <- HT.lookup descs iUse
