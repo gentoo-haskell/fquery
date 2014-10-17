@@ -20,9 +20,7 @@ basename xs = case splitBy (== '/') xs of
 
 -- |Remove all non-directories from a list of FilePaths.
 noDirs :: IO [FilePath] -> IO [FilePath]
-noDirs ioFps = do
-  fps <- ioFps
-  filterM doesFileExist fps
+noDirs ioFps = filterM doesFileExist =<< ioFps
 
 
 concatPath :: [String] -> String
