@@ -1,7 +1,7 @@
 -- Depend.hs
 --
 -- Module for parsing DEPEND and RDEPEND files, located in
--- portageDB/cateogry/package/.
+-- portageDB/category/package/.
 
 module Adelie.Depend (
   Version,
@@ -24,11 +24,11 @@ import qualified Adelie.Util as E
 type Version = String
 
 data Dependency
-  = GreaterEqual  String Version
-  | Equal         String Version
-  | Unstable      String Version
-  | NotInstalled  String
-  | Any           String
+  = GreaterEqual  String Version -- '>=c/p-v'
+  | Equal         String Version -- '=c/p-v*'
+  | Pinned        String Version -- '~c/p-v'
+  | Blocker       String         -- '!c/p-v'
+  | Any           String         -- 'c/p'
     deriving (Eq, Show)
 
 ----------------------------------------------------------------
@@ -51,8 +51,8 @@ readDepend fn iUse = do
 putDependency :: Dependency -> IO ()
 putDependency (GreaterEqual p v) = putStr $ ">=" ++ p ++ '-':v
 putDependency (Equal p v)        = putStr $ '=':p ++ '-':v
-putDependency (Unstable p v)     = putStr $ '~':p ++ '-':v
-putDependency (NotInstalled p)   = putStr $ '!':p
+putDependency (Pinned p v)       = putStr $ '~':p ++ '-':v
+putDependency (Blocker p)        = putStr $ '!':p
 putDependency (Any p)            = putStr p
 
 ----------------------------------------------------------------
@@ -126,16 +126,22 @@ breakVersion str = (n, v)
         v = drop (length n+1) str
 
 toDependency :: String -> Dependency
+toDependency s =
+    case s of
+        ('>':'=':str) ->
+            let (n, v) = breakVersion str
+            in GreaterEqual n v
 
-toDependency ('>':'=':str) = (GreaterEqual n v)
-  where (n, v) = breakVersion str
+        ('=':str) ->
+            let (n, v) = breakVersion str
+            in Equal n v
 
-toDependency ('=':str) = (Equal n v)
-  where (n, v) = breakVersion str
+        ('~':str) ->
+            let (n, v) = breakVersion str
+            in Pinned n v
 
-toDependency ('~':str) = (Unstable n v)
-  where (n, v) = breakVersion str
+        ('!':n) ->
+            Blocker n
 
-toDependency ('!':n) = (NotInstalled n)
-
-toDependency n = (Any n)
+        n ->
+            Any n

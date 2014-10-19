@@ -64,11 +64,11 @@ satisfiedBy :: Dependency -> String -> Bool
   (wantName == provName) && (compareVersion provVer wantVer) == EQ
   where (provName, provVer) = breakVersion provided
 
-(Unstable wantName wantVer) `satisfiedBy` provided =
+(Pinned wantName wantVer) `satisfiedBy` provided =
   (wantName == provName) && (compareVersion provVer wantVer) == EQ
   where (provName, provVer) = breakVersion provided
 
-(NotInstalled _) `satisfiedBy` _ = False
+(Blocker _) `satisfiedBy` _ = False
 
 (Any wantName) `satisfiedBy` provided =
   wantName == provName
