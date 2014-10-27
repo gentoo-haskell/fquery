@@ -70,9 +70,9 @@ putContents' f (Sym l t _) = cyan  >> putStr (l ++ " -> " ++ t) >> f
 ----------------------------------------------------------------
 
 contentsParser :: String -> Contents
-contentsParser ('d':'i':'r':' ':dir) = (Dir dir)
+contentsParser ('d':'i':'r':' ':dir) = Dir dir
 
-contentsParser ('o':'b':'j':' ':ln0) = (Obj obj md5 time)
+contentsParser ('o':'b':'j':' ':ln0) = Obj obj md5 time
   where ln1 = dropWhile isSpace $ reverse ln0
         (time', ln2) = break2 (not.isDigit) ln1
         (md5', obj') = break2 (not.isHexDigit) ln2
@@ -80,7 +80,7 @@ contentsParser ('o':'b':'j':' ':ln0) = (Obj obj md5 time)
         md5  = reverse md5'
         time = digitsToInt (reverse time')
 
-contentsParser ('s':'y':'m':' ':ln0) = (Sym link target time)
+contentsParser ('s':'y':'m':' ':ln0) = Sym link target time
   where (link, ln1) = breakLink ln0
         ln2 = reverse ln1
         (time', target') = break2 (not.isDigit) ln2

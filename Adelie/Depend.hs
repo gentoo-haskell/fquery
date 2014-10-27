@@ -40,7 +40,7 @@ dependFromCatName (cat, name) = concatPath [portageDB,cat,name,"RDEPEND"]
 
 readDepend :: FilePath -> [String] -> IO [Dependency]
 readDepend fn iUse = do
-  r <- (start_parser fn) `E.catchIOE` (\ _ -> return $ Right [])
+  r <- start_parser fn `E.catchIOE` (\ _ -> return $ Right [])
   case r of
     Left err -> putStr "Parse error at " >> print err >> error "Aborting"
     Right x  -> return $ nub x
@@ -84,7 +84,7 @@ parsePackageOrUse iUse =
      ; do { char '?'        -- useFlag
           ; spaces
           ; r <- parseBrackets iUse
-          ; let filt | head p == '!' = not $ (tail p) `elem` iUse
+          ; let filt | head p == '!' = not $ tail p `elem` iUse
                      | otherwise     = p `elem` iUse
           ; if filt
               then return r

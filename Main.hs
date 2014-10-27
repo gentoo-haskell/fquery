@@ -26,64 +26,64 @@ data Command
 
 logCommands :: [Command]
 logCommands = [
-  (Long   "c" "changes"
+  Long   "c" "changes"
           "list changes since the installed version"
-          qChangelog),
-  (Short  "cl"
+          qChangelog,
+  Short  "cl"
           "find the changelog of a package"
-          qLogFile)
+          qLogFile
   ]
 
 listCommands :: [Command]
 listCommands = [
-  (Long   "f" "files"
+  Long   "f" "files"
           "list the contents of a package"
-          (qList ListAll)),
-  (Short  "fd"
+          (qList ListAll),
+  Short  "fd"
           "list the directories in a package"
-          (qList ListDirs)),
-  (Short  "ff"
+          (qList ListDirs),
+  Short  "ff"
           "list the files in a package"
-          (qList ListFiles)),
-  (Short  "fl"
+          (qList ListFiles),
+  Short  "fl"
           "list the links in a package"
-          (qList ListLinks))
+          (qList ListLinks)
   ]
 
 ownCommands :: [Command]
 ownCommands = [
-  (Long   "b" "belongs"
+  Long   "b" "belongs"
           "find the package(s) owning a file"
-          qOwn),
-  (Short  "bp"
+          qOwn,
+  Short  "bp"
           "find the package(s) owning a file with regexp"
-          qOwnRegex),
-  (Long   "s" "size"
+          qOwnRegex,
+  Long   "s" "size"
           "find the size of files in a package"
-          qSize),
-  (Long   "k" "check"
+          qSize,
+  Long   "k" "check"
           "check MD5sums and timestamps of a package"
-          qCheck)
+          qCheck
   ]
 
 dependCommands :: [Command]
 dependCommands = [
-  (Long   "d" "depends"
+  Long   "d" "depends"
           "list packages directly depending on this package"
-          qDepend),
-  (Short  "dd"
+          qDepend,
+  Short  "dd"
           "list direct dependencies of a package"
-          qWant)
+          qWant
   ]
 
 useCommands :: [Command]
 useCommands = [
-  (Long   "u" "uses"
+  Long   "u" "uses"
           "describe a package's USE flags"
-          qUse),
-  (Long   "h" "hasuse"
+          qUse,
+  Long   "h" "hasuse"
           "list all packages with a USE flag"
-          qHasUse)
+          qHasUse
   ]
 
 allCommands :: [Command]
@@ -98,7 +98,7 @@ main = do
   mapM_ parseOptions options
   case commands of
     [] -> usage
-    (cmd:cargs) -> (runCommand cmd allCommands) cargs
+    cmd:cargs -> runCommand cmd allCommands cargs
 
 
 isOption :: String -> Bool
@@ -118,13 +118,13 @@ parseOptions _ = return ()
 ----------------------------------------------------------------
 
 runCommand :: String -> [Command] -> CommandProc
-runCommand _ [] = (\ _ -> usage)
+runCommand _ [] = \ _ -> usage
 
-runCommand command ((Short cmd _ f):cs)
+runCommand command (Short cmd _ f:cs)
   | command == cmd  = f
   | otherwise       = runCommand command cs
 
-runCommand command ((Long cmd0 cmd1 _ f):cs)
+runCommand command (Long cmd0 cmd1 _ f:cs)
   | command == cmd0 = f
   | command == cmd1 = f
   | otherwise       = runCommand command cs

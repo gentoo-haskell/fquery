@@ -57,15 +57,15 @@ breakVersion str = (n, v)
 satisfiedBy :: Dependency -> String -> Bool
 
 (GreaterEqual wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && (compareVersion provVer wantVer) /= LT
+  (wantName == provName) && compareVersion provVer wantVer /= LT
   where (provName, provVer) = breakVersion provided
 
 (Equal wantName wantVer) `satisfiedBy` provided = 
-  (wantName == provName) && (compareVersion provVer wantVer) == EQ
+  (wantName == provName) && compareVersion provVer wantVer == EQ
   where (provName, provVer) = breakVersion provided
 
 (Pinned wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && (compareVersion provVer wantVer) == EQ
+  (wantName == provName) && compareVersion provVer wantVer == EQ
   where (provName, provVer) = breakVersion provided
 
 (Blocker _) `satisfiedBy` _ = False

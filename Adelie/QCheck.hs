@@ -49,7 +49,7 @@ check' (Obj o m _) (g, b) = do
       ln <- hGetLine rd
       hClose rd
       hClose wr
-      if m == (takeWhile isHexDigit ln)
+      if m == takeWhile isHexDigit ln
         then return (False, (g+1, b))
         else putMD5error o >> return (False, (g, b+1))
 

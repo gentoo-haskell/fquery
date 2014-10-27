@@ -37,7 +37,7 @@ off2    = do
     else putChar '\n'
 
 whenM :: IO Bool -> IO () -> IO ()
-whenM cond f = cond >>= (flip when f)
+whenM cond f = cond >>= flip when f
 
 ----------------------------------------------------------------
 

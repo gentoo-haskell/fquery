@@ -23,7 +23,7 @@ qLogFile args = mapM_ (putStrLn.logFile) =<< findInstalledPackages args
 
 logFile :: (String, String) -> String
 logFile (cat, name) = 
-  portageTree ++ '/':cat ++ '/':(dropVersion name) ++ "/ChangeLog"
+  portageTree ++ '/':cat ++ '/':dropVersion name ++ "/ChangeLog"
 
 ----------------------------------------------------------------
 
@@ -140,7 +140,7 @@ putFiles rem' (f:files) =
       putFiles 76 (f:files)
     else do
       cyan
-      if (last f == ',')
+      if last f == ','
         then putStr (dropTail 1 f) >> off >> putStr ", "
         else putStr f >> off >> putChar ' '
       putFiles (rem' - len - 1) files
@@ -155,7 +155,7 @@ putBody ('#':c0) =
   case bug of
     [] -> putChar '#' >> putBody cs
     _  -> inMagenta (putStr ('#':bug)) >> putBody cs
-  where (bug, cs) = span (isDigitOrSpace) c0
+  where (bug, cs) = span isDigitOrSpace c0
 
 putBody (c:cs) = putChar c >> putBody cs
 

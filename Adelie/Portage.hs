@@ -55,8 +55,8 @@ dropVersion :: String -> String
 dropVersion [] = []
 dropVersion ('-':x:xs)
   | isDigit x = []
-  | otherwise = '-':x:(dropVersion xs)
-dropVersion (x:xs) = x:(dropVersion xs)
+  | otherwise = '-':x:dropVersion xs
+dropVersion (x:xs) = x:dropVersion xs
 
 fullnameFromCatName :: (String, String) -> String
 fullnameFromCatName (cat, name) = cat ++ '/':name

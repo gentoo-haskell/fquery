@@ -20,4 +20,4 @@ provideFromCatName (cat,name) = concatPath [portageDB,cat,name,"PROVIDE"]
 ----------------------------------------------------------------
 
 readProvide :: FilePath -> IO [String]
-readProvide fn = (liftM words (readFile fn)) `E.catchIOE` (\ _ -> return [])
+readProvide fn = liftM words (readFile fn) `E.catchIOE` (\ _ -> return [])
