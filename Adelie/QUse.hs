@@ -5,7 +5,6 @@
 module Adelie.QUse (qUse) where
 
 import qualified Data.HashTable.IO as HT
-import qualified Data.List as L
 import Control.Monad (unless)
 
 import Adelie.Colour
