@@ -12,8 +12,9 @@ module Adelie.Depend (
   putDependency
 ) where
 
-import Data.Char (isSpace)
+import qualified Data.Char as C
 import Data.List (nub)
+import qualified Debug.Trace as DT
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language
 import Text.ParserCombinators.Parsec.Token
@@ -25,7 +26,10 @@ type Version = String
 
 data Dependency
   = GreaterEqual  String Version -- '>=c/p-v'
+  | Greater       String Version -- '>c/p-v'
   | Equal         String Version -- '=c/p-v*'
+  | LessEqual     String Version -- '<=c/p-v'
+  | Less          String Version -- '<c/p-v'
   | Pinned        String Version -- '~c/p-v'
   | Blocker       String         -- '!c/p-v'
   | Any           String         -- 'c/p'
@@ -50,9 +54,12 @@ readDepend fn iUse = do
 
 putDependency :: Dependency -> IO ()
 putDependency (GreaterEqual p v) = putStr $ ">=" ++ p ++ '-':v
-putDependency (Equal p v)        = putStr $ '=':p ++ '-':v
-putDependency (Pinned p v)       = putStr $ '~':p ++ '-':v
-putDependency (Blocker p)        = putStr $ '!':p
+putDependency (Greater p v)      = putStr $ ">"  ++ p ++ '-':v
+putDependency (Equal p v)        = putStr $ "="  ++ p ++ '-':v
+putDependency (LessEqual p v)    = putStr $ "<=" ++ p ++ '-':v
+putDependency (Less p v)         = putStr $ "<"  ++ p ++ '-':v
+putDependency (Pinned p v)       = putStr $ "~"  ++ p ++ '-':v
+putDependency (Blocker p)        = putStr $ "!"  ++ p
 putDependency (Any p)            = putStr p
 
 ----------------------------------------------------------------
@@ -104,7 +111,7 @@ parsePackageOrUseWord = do { result <- many1 (satisfy cond)
     cond '?' = False
     cond ')' = False
     cond '[' = False
-    cond x = not $ isSpace x
+    cond x = not $ C.isSpace x
 
 parseBrackets :: [String] -> Parser [Dependency]
 parseBrackets iUse = do { _ <- char '('
@@ -127,16 +134,33 @@ toDependency s =
             let (n, v) = breakVersion str
             in GreaterEqual n v
 
+        ('>':str) ->
+            let (n, v) = breakVersion str
+            in Greater n v
+
         ('=':str) ->
             let (n, v) = breakVersion str
             in Equal n v
 
+        ('<':'=':str) ->
+            let (n, v) = breakVersion str
+            in LessEqual n v
+
+        ('<':str) ->
+            let (n, v) = breakVersion str
+            in Less n v
+
+        -- TODO: can be any atom expression
         ('~':str) ->
             let (n, v) = breakVersion str
             in Pinned n v
 
+        -- TODO: can be any atom expression
         ('!':n) ->
             Blocker n
 
-        n ->
+        n@(c:_) | C.isAlpha c ->
+            Any n
+
+        n -> DT.trace ("FIXME: unknown atom type: " ++ show n) $
             Any n

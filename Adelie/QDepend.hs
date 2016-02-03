@@ -52,7 +52,10 @@ puts str provided iWant = mapM_ print' perms
 breakVersion :: String -> (String, String)
 breakVersion str = (n, v)
   where n = dropVersion str
-        v = drop (length n+1) str
+        -- leave only version part without :SLOT/SUBSLOT part:
+        --   "0.3:0/0.2.2=" -> 0.3
+        v = takeWhile (`notElem` ":/=") $
+              drop (length n+1) str
 
 satisfiedBy :: Dependency -> String -> Bool
 
@@ -60,8 +63,20 @@ satisfiedBy :: Dependency -> String -> Bool
   (wantName == provName) && compareVersion provVer wantVer /= LT
   where (provName, provVer) = breakVersion provided
 
+(Greater wantName wantVer) `satisfiedBy` provided =
+  (wantName == provName) && compareVersion provVer wantVer == GT
+  where (provName, provVer) = breakVersion provided
+
 (Equal wantName wantVer) `satisfiedBy` provided = 
   (wantName == provName) && compareVersion provVer wantVer == EQ
+  where (provName, provVer) = breakVersion provided
+
+(LessEqual wantName wantVer) `satisfiedBy` provided =
+  (wantName == provName) && compareVersion provVer wantVer /= GT
+  where (provName, provVer) = breakVersion provided
+
+(Less wantName wantVer) `satisfiedBy` provided =
+  (wantName == provName) && compareVersion provVer wantVer == LT
   where (provName, provVer) = breakVersion provided
 
 (Pinned wantName wantVer) `satisfiedBy` provided =
