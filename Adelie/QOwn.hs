@@ -21,7 +21,7 @@ import Adelie.Pretty
 qOwn :: [String] -> IO ()
 qOwn [] = return ()
 qOwn args = do
-  foldMUntil qOwn' null args =<< allInstalledPackages
+  _ <- foldMUntil qOwn' null args =<< allInstalledPackages
   putChar '\n'
 
 qOwn' :: [String] -> (String, String) -> IO [String]
