@@ -71,17 +71,14 @@ dependParser' iUse = lexeme tp pp
          <|> parsePackageOrUse iUse
 
 parseOr :: [String] -> Parser [Dependency]
-parseOr iUse = do { string "||"
-                  ; spaces
-                  ; parseBrackets iUse
-                  }
+parseOr iUse = (string "||" >> spaces >> parseBrackets iUse)
              <|>
-                parseBrackets iUse
+               parseBrackets iUse
 
 parsePackageOrUse :: [String] -> Parser [Dependency]
 parsePackageOrUse iUse =
   do { p <- parsePackageOrUseWord
-     ; do { char '?'        -- useFlag
+     ; do { _ <- char '?'        -- useFlag
           ; spaces
           ; r <- parseBrackets iUse
           ; let filt | head p == '!' = not $ tail p `elem` iUse
@@ -97,12 +94,10 @@ parsePackageOrUseWord :: Parser String
 parsePackageOrUseWord = do { result <- many1 (satisfy cond)
                            -- skip[use]
                            -- TODO: add it to output
-                           ; optionMaybe (do { char '['
-                                             ; _use <- many1 (satisfy (/= ']'))
-                                             ; char ']'
-                                             -- ; return use
-                                             ; return ()
-                                             })
+                           ; _ <- optionMaybe (do { _use <- between (char '[') (char ']') $ many1 (satisfy (/= ']'))
+                                               -- ; return use
+                                               ; return ()
+                                               })
                            ; return result
                            }
   where
@@ -112,7 +107,7 @@ parsePackageOrUseWord = do { result <- many1 (satisfy cond)
     cond x = not $ isSpace x
 
 parseBrackets :: [String] -> Parser [Dependency]
-parseBrackets iUse = do { char '('
+parseBrackets iUse = do { _ <- char '('
                         ; spaces
                         ; r <- manyTill (dependParser' iUse) (try (char ')'))
                         ; return $ concat r
