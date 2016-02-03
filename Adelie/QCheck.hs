@@ -45,7 +45,7 @@ check' (Obj o m _) (g, b) = do
       return (False, (g, b+1))
     Right _stat -> do
       (rd, wr) <- createPipeHandle
-      runMD5sum o (Just wr) >>= waitForProcess
+      _ <- runMD5sum o (Just wr) >>= waitForProcess
       ln <- hGetLine rd
       hClose rd
       hClose wr
