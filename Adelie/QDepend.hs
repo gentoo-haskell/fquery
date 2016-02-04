@@ -13,6 +13,8 @@ import Adelie.Pretty
 import Adelie.Provide
 import Adelie.Use
 
+import Data.Function
+
 ----------------------------------------------------------------
 
 qDepend :: [String] -> IO ()
@@ -52,35 +54,40 @@ puts str provided iWant = mapM_ print' perms
 breakVersion :: String -> (String, String)
 breakVersion str = (n, v)
   where n = dropVersion str
-        -- leave only version part without :SLOT/SUBSLOT part:
-        --   "0.3:0/0.2.2=" -> 0.3
-        v = takeWhile (`notElem` ":/=") $
-              drop (length n+1) str
+        v = drop (length n+1) str
+
+-- leave only version part without :SLOT/SUBSLOT part:
+--   "0.3:0/0.2.2=" -> 0.3
+unslot :: String -> String
+unslot = takeWhile (`notElem` ":/=")
+
+cvu :: String -> String -> Ordering
+cvu = compareVersion `on` unslot
 
 satisfiedBy :: Dependency -> String -> Bool
 
 (GreaterEqual wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && compareVersion provVer wantVer /= LT
+  (wantName == provName) && cvu provVer wantVer /= LT
   where (provName, provVer) = breakVersion provided
 
 (Greater wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && compareVersion provVer wantVer == GT
+  (wantName == provName) && cvu provVer wantVer == GT
   where (provName, provVer) = breakVersion provided
 
 (Equal wantName wantVer) `satisfiedBy` provided = 
-  (wantName == provName) && compareVersion provVer wantVer == EQ
+  (wantName == provName) && cvu provVer wantVer == EQ
   where (provName, provVer) = breakVersion provided
 
 (LessEqual wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && compareVersion provVer wantVer /= GT
+  (wantName == provName) && cvu provVer wantVer /= GT
   where (provName, provVer) = breakVersion provided
 
 (Less wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && compareVersion provVer wantVer == LT
+  (wantName == provName) && cvu provVer wantVer == LT
   where (provName, provVer) = breakVersion provided
 
 (Pinned wantName wantVer) `satisfiedBy` provided =
-  (wantName == provName) && compareVersion provVer wantVer == EQ
+  (wantName == provName) && cvu provVer wantVer == EQ
   where (provName, provVer) = breakVersion provided
 
 (Blocker _) `satisfiedBy` _ = False
