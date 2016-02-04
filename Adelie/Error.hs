@@ -6,7 +6,7 @@ module Adelie.Error
     , bracket
 ) where
 
-import qualified Control.Exception.Extensible as E
+import qualified Control.Exception as E
 
 try :: IO a -> IO (Either E.SomeException a)
 try = E.try
