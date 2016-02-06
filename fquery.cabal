@@ -1,9 +1,9 @@
 Name:          fquery
-Version:       0.2.1.5
+Version:       0.2.2
 
 Author:        David Wang <millimillenary@gmail.com>, Sergei Trofimovich <slyfox@inbox.ru>
 Maintainer:    Sergei Trofimovich <slyfox@inbox.ru>
-Copyright:     2006 David Wang, 2009-2011 Sergei Trofimovich
+Copyright:     2006 David Wang, 2009-2016 Sergei Trofimovich
 
 License-File:  LICENCE.txt
 License:       OtherLicense
