@@ -32,6 +32,7 @@ Executable fquery
         Adelie.Contents
         Adelie.Depend
         Adelie.Error
+        Adelie.FileEx
         Adelie.ListEx
         Adelie.Options
         Adelie.Portage
