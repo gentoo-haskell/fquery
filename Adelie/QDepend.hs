@@ -37,13 +37,14 @@ dep allPacks catname = do
         fnProvide = provideFromCatName catname
 
 dep' :: [String] -> String -> IO ()
-dep' provided fullname =
-  readUse fnIUse >>= readDepend fnDepend >>= puts fullname provided
+dep' provided fullname = do
+  readUse fnIUse >>= readDepend fnDepend >>= filterAndPuts fullname provided
   where fnDepend = concatPath [portageDB,fullname,"RDEPEND"]
         fnIUse = concatPath [portageDB,fullname,"USE"]
 
-puts :: String -> [String] -> [Dependency] -> IO ()
-puts str provided iWant = mapM_ print' perms
+filterAndPuts :: String -> [String] -> [Dependency] -> IO ()
+filterAndPuts str provided iWant = do
+  mapM_ print' perms
   where perms = [ (p, w) | p <- provided, w <- iWant, w `satisfiedBy` p ]
         print' (_p, w) =
           white >> putStr (pad 32 ' ' str) >> off >>
@@ -59,7 +60,7 @@ breakVersion str = (n, v)
 -- leave only version part without :SLOT/SUBSLOT part:
 --   "0.3:0/0.2.2=" -> 0.3
 unslot :: String -> String
-unslot = takeWhile (`notElem` ":/=")
+unslot = takeWhile (`notElem` ":")
 
 cvu :: String -> String -> Ordering
 cvu = compareVersion `on` unslot
@@ -93,5 +94,5 @@ satisfiedBy :: Dependency -> String -> Bool
 (Blocker _) `satisfiedBy` _ = False
 
 (Any wantName) `satisfiedBy` provided =
-  wantName == provName
+  unslot wantName == provName
   where provName = dropVersion provided
